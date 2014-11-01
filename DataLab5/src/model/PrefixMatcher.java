@@ -26,28 +26,34 @@ public class PrefixMatcher {
 			GZIPInputStream gZip = new GZIPInputStream(new FileInputStream(file1));
 			BufferedReader br = new BufferedReader(new InputStreamReader(gZip));
 			while((line = br.readLine()) != null) {
-				System.out.println(line);
+				String[] parts = line.split("\\|");
+				buildTrie(parts[0], parts[1], parts[2]);
+//				System.out.println(parts[0]);
+//				System.out.println(parts[1]);
+//				System.out.println(parts[2]);
+//				System.out.println(line);
 			}
 			
 			br.close();
 		} catch (IOException e){
 			e.printStackTrace();
 		}
-//		String line;
-//		String[] parts = {};
-//		int i = 0;
-//		try {
-//			BufferedReader br = new BufferedReader(new FileReader(file1));
-//			while ((line = br.readLine()) != null) {
-//				line = br.readLine();
-//				parts[i] = line;
-//				System.out.println(parts[i]);
-//				i++;
-//			}
-//			line = br.readLine();
-//			br.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+	}
+	
+	public void buildTrie(String s, String s2, String s3){
+		String prefix = s;
+		int[] as = getAS(s2);
+		String nextHop = s3;
+		
+		// TODO Begin building the trie here
+	}
+	
+	public int[] getAS(String s){
+		String[] temp = s.split(" ");
+		int[] result = new int[temp.length];
+		
+		for(int i = 0; i < temp.length; i++)
+			result[i] = Integer.parseInt(temp[i]);
+		return result;
 	}
 }

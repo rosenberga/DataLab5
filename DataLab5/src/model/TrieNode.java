@@ -1,33 +1,41 @@
 package model;
 
+import java.util.HashMap;
+
 public class TrieNode {
-	protected char letter;
-	protected TrieNode[] links;
-	protected boolean match;
+	private HashMap<String, TrieNode> children;
+	private String nextHop;
 	
-	public TrieNode(char letter, boolean match){
-		this.letter = letter;
-		links = new TrieNode[3];	// root, next-left, and next-right for 1 bit trie
-		this.match = match;
+	public TrieNode() {
+		children = new HashMap<String, TrieNode>();
 	}
-	
-	public char getLetter(){
-		return this.letter;
+
+	public TrieNode(String nextHop) {
+		children = new HashMap<String, TrieNode>();
+		this.nextHop = nextHop;
 	}
-	
-	public void setLetter(char c){
-		this.letter = c;
+
+	public String getNextHop() {
+		return nextHop;
 	}
-	
-	public TrieNode[] getLinks(){
-		return this.links;
+
+	public void setNextHop(String nextHop) {
+		this.nextHop = nextHop;
 	}
-	
-	public void setLinks(TrieNode[] l){
-		this.links = l;
+
+	public HashMap<String, TrieNode> getChildren() {
+		return children;	
 	}
-	
-	public boolean isMatch(){
-		return this.match;
+
+	public TrieNode getChild(String key) {
+		return children.get(key);
+	}
+
+	public boolean hasChildForKey(String key) {
+		return children.get(key) != null;
+	}
+
+	public void addChild(String key, TrieNode node) {
+		children.put(key, node);
 	}
 }

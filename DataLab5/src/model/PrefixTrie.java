@@ -1,69 +1,128 @@
 package model;
 
-public class PrefixTrie {
-	public TrieNode createTree()
-    {
-        return(new TrieNode('\0', false));
-    }
-   
-    public void insertWord(TrieNode root, String word)
-    {
-        int offset = 97;
-        int l = word.length();
-        char[] letters = word.toCharArray();
-        TrieNode curNode = root;
-       
-        for (int i = 0; i < l; i++)
-        {
-            if (curNode.links[letters[i]-offset] == null)
-                curNode.links[letters[i]-offset] = new TrieNode(letters[i], i == l-1 ? true : false);
-            curNode = curNode.links[letters[i]-offset];
-        }
-        
-        if(curNode != null && !curNode.match)
-        	curNode.match = true;
-    }
+import java.util.Iterator;
+import java.util.Map;
 
-    public boolean find(TrieNode root, String word)
-    {
-        char[] letters = word.toCharArray();
-        int l = letters.length;
-        int offset = 97;
-        TrieNode curNode = root;
-       
-        int i;
-        for (i = 0; i < l; i++)
-        {
-            if (curNode == null)
-                return false;
-            curNode = curNode.links[letters[i]-offset];
-        }
-       
-        if (i == l && curNode == null)
-            return false;
-       
-        if (curNode != null && !curNode.match)
-            return false;
-       
-        return true;
-    }
-   
-    public void printTree(TrieNode root, int level, char[] branch)
-    {
-        if (root == null)
-            return;
-       
-        for (int i = 0; i < root.links.length; i++)
-        {
-            branch[level] = root.letter;
-            printTree(root.links[i], level+1, branch);   
-        }
-       
-        if (root.match)
-        {
-            for (int j = 1; j <= level; j++)
-                System.out.print(branch[j]);
-            System.out.println();
-        }
-    }
+public class PrefixTrie {
+	private TrieNode root;
+	private int strides;
+	private TrieNode head;
+	private String longestPrefixMatch; // may want to switch to int?
+	
+	public PrefixTrie(int strides){
+		root = new TrieNode("-1");
+		this.strides = strides;
+		root = createChildrenForNode(root);
+		head = root;
+	}
+	
+	public TrieNode getRoot(){
+		return root;
+	}
+	
+	public String findNextHopRouter(String ip){
+		String bit = "";
+		
+		if(ip.length() >= strides){
+			bit = ip.substring(0, strides);
+		} else {
+			bit = ip;
+		}
+		
+		if (ip.equals("")) {
+			setLongestPrefixMatch();
+			return longestPrefixMatch;
+		}
+		if (!root.hasChildForKey(bit)) {
+			setLongestPrefixMatch();
+			root = head;
+		} else {
+			setLongestPrefixMatch();
+			root = root.getChild(bit);
+			if (ip.length() == strides) {
+				setLongestPrefixMatch();
+				root = head;
+			} else {
+				return findNextHopRouter(ip.substring(strides));
+			}
+		}
+		String rtn = longestPrefixMatch;
+		longestPrefixMatch = null;
+		return rtn == null ? "No Prefix found" : rtn;
+	}
+	
+	private void setLongestPrefixMatch() {
+		if (!root.getNextHop().equals("-1")) {
+			longestPrefixMatch = root.getNextHop();
+		}
+	}
+
+	public void insert(String ip, String nextHop) {
+		String bit = "";
+		String binarySub = "";
+		if (ip.length() == 0) {
+			root.setNextHop(nextHop);
+			return;
+		}
+		if (ip.length() >= strides) {
+			bit = ip.substring(0, strides);
+			binarySub = ip.substring(strides);
+		} else {
+			if (root.getChildren().size() == 0) {
+				createChildrenForNode(root);
+			}
+			insertNaughtyBit(ip, nextHop);
+			root = head;
+			return;
+		}
+		if (root.getChildren().size() == 0) {
+			createChildrenForNode(root);
+		}
+		root = root.getChild(bit);
+		if (ip.length() == strides) {
+			root.setNextHop(nextHop);
+			root = head;
+		} else {
+			insert(binarySub, nextHop);
+		}
+	}
+
+	private TrieNode createChildrenForNode(TrieNode node) {
+		String[] connections;
+		if (strides == 2) {
+			connections = new String[] { "00", "01", "10", "11" };
+			return createChildrenWithConnection(connections, node);
+		} else if (strides == 3) {
+			connections = new String[] { "000", "001", "010", "011", "100",
+					"101", "110", "111" };
+			return createChildrenWithConnection(connections, node);
+		} else {
+			connections = new String[] { "0", "1" };
+			return createChildrenWithConnection(connections, node);
+		}
+	}
+
+	private TrieNode createChildrenWithConnection(String[] connections,
+			TrieNode node) {
+		for (String connection : connections) {
+			TrieNode newChild = new TrieNode("-1");
+			node.addChild(connection, newChild);
+		}
+		return node;
+	}
+
+	public void insertNaughtyBit(String toMatch, String nextHop) {
+		Iterator it = root.getChildren().entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pairs = (Map.Entry) it.next();
+			String key = pairs.getKey().toString();
+			if (key.startsWith(toMatch) && root.getChild(key).getNextHop().equals("-1")) {
+				root.getChild(key).setNextHop(nextHop);
+			}
+		}
+	}
+
+	public void setStrides(int strides) {
+		this.strides = strides;
+	}
 }

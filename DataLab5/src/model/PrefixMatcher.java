@@ -10,6 +10,7 @@ public class PrefixMatcher {
 	private int strides;
 	
 	public static void main(String[] args) {
+		
 		new PrefixMatcher(args[0], args[1], args[2]);
 	}
 	
@@ -88,35 +89,42 @@ public class PrefixMatcher {
 			String str = current.get(i);
 			String[] parts = str.split("\\|");
 			
-			TrieNode node = new TrieNode(parts[2]);
-			
 			int[] prefix = getPrefixAsInt(parts[0]);
 			int length = getPrefixLength(parts[0]);
-					
 			
+			TrieNode curr = trie.getRoot();
+			
+			for (int j = 0; j < length; j++) {
+				
+				int pre;
+				int shift = 7 - (j % 8);
+				
+				if (j >= 0 && j < 8) {
+					pre = prefix[0];
+				} else if (j >=8 && j < 16) {
+					pre = prefix[1];
+				} else if (j >= 16 && j < 24) {
+					pre = prefix[2];
+				} else {
+					pre = prefix[3];
+				}
+				
+				int bit = ((pre >>> shift) << 7) >>> 7;
+				
+				if(curr.getChildren().containsKey(""+bit)) {
+					curr = curr.getChild(""+bit);
+				} else {
+					curr.addChild(""+bit, new TrieNode());
+					curr = curr.getChild(""+bit);
+				}
+				
+				if(j + 1 == length) {
+					curr.setNextHop(parts[2]);
+				}
+			}
 		}
 		
 		return trie;
-	}
-	
-	public void buildTrie(String s, String s2, String s3){
-		String prefixString = s;
-		int prefixLength = getPrefixLength(prefixString);
-		int[] prefix = getPrefixAsInt(prefixString);
-		int[] as = getAS(s2);
-		int[] nextHop = getIPAsInt(s3);
-		
-		PrefixTrie trie = new PrefixTrie(strides);
-		// TODO Begin building the trie here
-		
-	}
-	
-	private int[] getAS(String s){
-		String[] temp = s.split(" ");
-		int[] result = new int[temp.length];
-		for(int i = 0; i < temp.length; i++)
-			result[i] = Integer.parseInt(temp[i]);
-		return result;
 	}
 	
 	private int getPrefixLength(String s){

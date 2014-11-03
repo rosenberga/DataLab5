@@ -125,4 +125,29 @@ public class PrefixTrie {
 	public void setStrides(int strides) {
 		this.strides = strides;
 	}
+
+	public TrieNode getHead() {
+		return head;
+	}
+
+	public void setHead(TrieNode head) {
+		this.head = head;
+	}
+
+	public String getLongestPrefixMatch() {
+		return longestPrefixMatch;
+	}
+
+	public void setLongestPrefixMatch(String longestPrefixMatch) {
+		this.longestPrefixMatch = longestPrefixMatch;
+	}
+
+	public int getStrides() {
+		return strides;
+	}
+
+	public void setRoot(TrieNode root) {
+		this.root = root;
+	}
+	
 }

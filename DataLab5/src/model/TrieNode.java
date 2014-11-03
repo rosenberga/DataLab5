@@ -38,4 +38,10 @@ public class TrieNode {
 	public void addChild(String key, TrieNode node) {
 		children.put(key, node);
 	}
+
+	public void setChildren(HashMap<String, TrieNode> children) {
+		this.children = children;
+	}
+	
+	
 }

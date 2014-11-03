@@ -9,6 +9,8 @@ public class PrefixMatcher {
 	private String file2;
 	private int strides;
 	
+	// do 31 - (strides-1) for shifting
+	
 	public static void main(String[] args) {
 		
 		new PrefixMatcher(args[0], args[1], args[2]);
@@ -31,7 +33,7 @@ public class PrefixMatcher {
 		
 		PrefixTrie trie = buildTrie(fin);
 		
-		// Lookup each ip in sampleips.txt, return next hop for each one
+		// Lookup each IP in sampleips.txt, return next hop for each one
 		readSecondFile(this.file2, trie);
 		
 	}
@@ -88,7 +90,7 @@ public class PrefixMatcher {
 	}
 	
 	private PrefixTrie buildTrie(ArrayList<String> current) {
-		PrefixTrie trie = new PrefixTrie(strides);
+		PrefixTrie trie = new PrefixTrie();
 		trie.setRoot(new TrieNode());
 		
 		for (int i = 0; i < current.size(); i++) {
@@ -133,25 +135,22 @@ public class PrefixMatcher {
 		return trie;
 	}
 	
-	private ArrayList<String> readSecondFile(String file, PrefixTrie trie){
+	private void readSecondFile(String file, PrefixTrie trie){
 		try{
 			String line;
 			BufferedReader br = new BufferedReader(new FileReader(file));
-			ArrayList<String> sin = new ArrayList<String>();
 			while((line = br.readLine()) != null){
-				sin.add(line);
+				System.out.print(line+ "\t");
 				getNextHop(line, trie);
 			}
 			br.close();
-			return sin;
 			
 		} catch (IOException e){
 			e.printStackTrace();
-			return null;
 		}	
 	}
 	
-	private String getNextHop(String str, PrefixTrie trie){
+	private void getNextHop(String str, PrefixTrie trie){
 			
 			int[] ip = getIPAsInt(str);
 			
@@ -182,17 +181,14 @@ public class PrefixMatcher {
 						curr = curr.getParent();
 						if (curr == null) {
 							System.out.println("NoMatch");
-							return null;
+							return;
 						}
 					}
 					
 					System.out.println(curr.getNextHop());
-					return curr.getNextHop();
+					return;
 				}
 			}
-		
-		System.out.println("No Match");
-		return "Match not found";
 	}
 	
 	private int getPrefixLength(String s){

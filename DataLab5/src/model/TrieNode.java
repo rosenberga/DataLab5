@@ -11,15 +11,11 @@ public class TrieNode {
 		children = new HashMap<String, TrieNode>();
 		parent = null;
 	}
-
-	public TrieNode(String nextHop) {
-		children = new HashMap<String, TrieNode>();
-		this.nextHop = nextHop;
-		parent = null;
-	}
+	
 	public TrieNode(TrieNode p) {
 		parent = p;
 		children = new HashMap<String, TrieNode>();
+		this.nextHop = null;
 	}
 
 	public String getNextHop() {

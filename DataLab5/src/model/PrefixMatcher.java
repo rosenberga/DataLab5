@@ -45,13 +45,29 @@ public class PrefixMatcher {
 		int[] as = getAS(s2);
 		String nextHop = s3;
 		
+		PrefixTrie trie = new PrefixTrie(strides);
 		// TODO Begin building the trie here
+		
 	}
 	
 	public int[] getAS(String s){
 		String[] temp = s.split(" ");
 		int[] result = new int[temp.length];
 		
+		for(int i = 0; i < temp.length; i++)
+			result[i] = Integer.parseInt(temp[i]);
+		return result;
+	}
+	
+	public int getPrefixLength(String s){
+		String[] temp = s.split("\\/");
+		int result = Integer.parseInt(temp[1]);
+		return result;
+	}
+	
+	public int[] getIPAsInt(String s){
+		String[] temp = s.split("\\.");
+		int[] result = new int[temp.length];
 		for(int i = 0; i < temp.length; i++)
 			result[i] = Integer.parseInt(temp[i]);
 		return result;

@@ -29,35 +29,71 @@ public class PrefixMatcher {
 		PrefixTrie trie = buildTrie(fin);
 		
 		// Lookup each ip in sampleips.txt, return next hop for each one
-		try{
-			String line;
-			BufferedReader br = new BufferedReader(new FileReader(file2));
-			while((line = br.readLine()) != null){
-				int[] lookup = getIPAsInt(line);
-				
-				
-				
-				//int bit = ((pre >>> shift) << 7) >>> 7;
-				//trie.findNextHopRouter(line);
-			}
-			
-		} catch (IOException e){
-			e.printStackTrace();
+		ArrayList<String> sin = readSecondFile(this.file2);
+		if (sin == null){
+			System.out.println("An error has occured when parsing the ip lookup file");
 			return;
 		}
 		
+		String nextHop = getNextHop(sin, trie);
+		
+		
 	}
 	
+	private String getNextHop(ArrayList<String> sin, PrefixTrie trie){
+		String result = "";
+		
+		for (int i = 0; i < sin.size(); i++) {
+			String str = sin.get(i);
+			String[] lookUp = str.split("\\.");
+			
+			int[] ip = new int[4];
+			for (int j = 0; j < 4; j++) {
+				ip[j] = Integer.parseInt(lookUp[j]);
+			}
+			
+			TrieNode curr = trie.getRoot();
+			
+			for (int j = 0; j < 32; j++) {
+				
+				int pre;
+				int shift = 7 - (j % 8);
+				
+				if (j >= 0 && j < 8) {
+					pre = ip[0];
+				} else if (j >=8 && j < 16) {
+					pre = ip[1];
+				} else if (j >= 16 && j < 24) {
+					pre = ip[2];
+				} else {
+					pre = ip[3];
+				}
+				
+				int bit = ((pre >>> shift) << 7) >>> 7;
+				
+				if(curr.getChildren().containsKey(""+bit)) {
+					curr = curr.getChild(""+bit);
+				} else {
+					System.out.print(curr.getNextHop());
+					return curr.getNextHop();
+				}
+			}
+		}
+		
+		System.out.print("No Match");
+		return "Match not found";
+	}
 	private ArrayList<String> readFirstFile(String file) {
 		String line;
 		try{
-			GZIPInputStream gZip = new GZIPInputStream(new FileInputStream(file1));
+			GZIPInputStream gZip = new GZIPInputStream(new FileInputStream(file));
 			BufferedReader br = new BufferedReader(new InputStreamReader(gZip));
 			
 			ArrayList<String> current = new ArrayList<String>();
 			ArrayList<String> fin = new ArrayList<String>();
 			String cS = "";
 			while((line = br.readLine()) != null) {
+				System.out.print(line + " ");
 				String[] parts = line.split("\\|");
 				if (current.size() == 0) {
 					current.add(line);
@@ -76,6 +112,22 @@ public class PrefixMatcher {
 			
 			br.close();
 			return fin;
+		} catch (IOException e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	private ArrayList<String> readSecondFile(String file){
+		try{
+			String line;
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			ArrayList<String> sin = new ArrayList<String>();
+			while((line = br.readLine()) != null){
+				sin.add(line);
+			}
+			return sin;
+			
 		} catch (IOException e){
 			e.printStackTrace();
 			return null;

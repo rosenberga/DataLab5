@@ -15,74 +15,27 @@ public class PrefixMatcher {
 	}
 	
 	public PrefixMatcher(String file1, String file2, String length) {
-		this.file1 = file2;
+		this.file1 = file1;
 		this.file2 = file2;
 		strides = Integer.parseInt(length);
 		
+		
 		ArrayList<String> fin = readFirstFile(this.file1);
+		
 		
 		if (fin == null) {
 			System.out.println("An error has occured when parsing the router file");
 			return;
 		}
 		
+		
 		PrefixTrie trie = buildTrie(fin);
 		
 		// Lookup each ip in sampleips.txt, return next hop for each one
-		ArrayList<String> sin = readSecondFile(this.file2);
-		if (sin == null){
-			System.out.println("An error has occured when parsing the ip lookup file");
-			return;
-		}
-		
-		String nextHop = getNextHop(sin, trie);
-		
+		readSecondFile(this.file2, trie);
 		
 	}
 	
-	private String getNextHop(ArrayList<String> sin, PrefixTrie trie){
-		String result = "";
-		
-		for (int i = 0; i < sin.size(); i++) {
-			String str = sin.get(i);
-			String[] lookUp = str.split("\\.");
-			
-			int[] ip = new int[4];
-			for (int j = 0; j < 4; j++) {
-				ip[j] = Integer.parseInt(lookUp[j]);
-			}
-			
-			TrieNode curr = trie.getRoot();
-			
-			for (int j = 0; j < 32; j++) {
-				
-				int pre;
-				int shift = 7 - (j % 8);
-				
-				if (j >= 0 && j < 8) {
-					pre = ip[0];
-				} else if (j >=8 && j < 16) {
-					pre = ip[1];
-				} else if (j >= 16 && j < 24) {
-					pre = ip[2];
-				} else {
-					pre = ip[3];
-				}
-				
-				int bit = ((pre >>> shift) << 7) >>> 7;
-				
-				if(curr.getChildren().containsKey(""+bit)) {
-					curr = curr.getChild(""+bit);
-				} else {
-					System.out.print(curr.getNextHop());
-					return curr.getNextHop();
-				}
-			}
-		}
-		
-		System.out.print("No Match");
-		return "Match not found";
-	}
 	private ArrayList<String> readFirstFile(String file) {
 		String line;
 		try{
@@ -93,7 +46,6 @@ public class PrefixMatcher {
 			ArrayList<String> fin = new ArrayList<String>();
 			String cS = "";
 			while((line = br.readLine()) != null) {
-				System.out.print(line + " ");
 				String[] parts = line.split("\\|");
 				if (current.size() == 0) {
 					current.add(line);
@@ -112,22 +64,6 @@ public class PrefixMatcher {
 			
 			br.close();
 			return fin;
-		} catch (IOException e){
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	private ArrayList<String> readSecondFile(String file){
-		try{
-			String line;
-			BufferedReader br = new BufferedReader(new FileReader(file));
-			ArrayList<String> sin = new ArrayList<String>();
-			while((line = br.readLine()) != null){
-				sin.add(line);
-			}
-			return sin;
-			
 		} catch (IOException e){
 			e.printStackTrace();
 			return null;
@@ -179,12 +115,12 @@ public class PrefixMatcher {
 					pre = prefix[3];
 				}
 				
-				int bit = ((pre >>> shift) << 7) >>> 7;
+				int bit = ((pre >>> shift) << 31) >>> 31;
 				
 				if(curr.getChildren().containsKey(""+bit)) {
 					curr = curr.getChild(""+bit);
 				} else {
-					curr.addChild(""+bit, new TrieNode());
+					curr.addChild(""+bit, new TrieNode(curr));
 					curr = curr.getChild(""+bit);
 				}
 				
@@ -195,6 +131,68 @@ public class PrefixMatcher {
 		}
 		
 		return trie;
+	}
+	
+	private ArrayList<String> readSecondFile(String file, PrefixTrie trie){
+		try{
+			String line;
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			ArrayList<String> sin = new ArrayList<String>();
+			while((line = br.readLine()) != null){
+				sin.add(line);
+				getNextHop(line, trie);
+			}
+			br.close();
+			return sin;
+			
+		} catch (IOException e){
+			e.printStackTrace();
+			return null;
+		}	
+	}
+	
+	private String getNextHop(String str, PrefixTrie trie){
+			
+			int[] ip = getIPAsInt(str);
+			
+			TrieNode curr = trie.getRoot();
+			
+			for (int j = 0; j < 32; j++) {
+				
+				int pre;
+				int shift = 7 - (j % 8);
+				
+				if (j >= 0 && j < 8) {
+					pre = ip[0];
+				} else if (j >=8 && j < 16) {
+					pre = ip[1];
+				} else if (j >= 16 && j < 24) {
+					pre = ip[2];
+				} else {
+					pre = ip[3];
+				}
+				
+				int bit = ((pre >>> shift) << 31) >>> 31;
+				
+				if(curr.getChildren().containsKey(""+bit)) {
+					curr = curr.getChild(""+bit);
+				} else {
+					
+					while(curr.getNextHop() == null) {
+						curr = curr.getParent();
+						if (curr == null) {
+							System.out.println("NoMatch");
+							return null;
+						}
+					}
+					
+					System.out.println(curr.getNextHop());
+					return curr.getNextHop();
+				}
+			}
+		
+		System.out.println("No Match");
+		return "Match not found";
 	}
 	
 	private int getPrefixLength(String s){

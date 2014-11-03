@@ -5,14 +5,21 @@ import java.util.HashMap;
 public class TrieNode {
 	private HashMap<String, TrieNode> children;
 	private String nextHop;
+	private TrieNode parent;
 	
 	public TrieNode() {
 		children = new HashMap<String, TrieNode>();
+		parent = null;
 	}
 
 	public TrieNode(String nextHop) {
 		children = new HashMap<String, TrieNode>();
 		this.nextHop = nextHop;
+		parent = null;
+	}
+	public TrieNode(TrieNode p) {
+		parent = p;
+		children = new HashMap<String, TrieNode>();
 	}
 
 	public String getNextHop() {
@@ -42,6 +49,12 @@ public class TrieNode {
 	public void setChildren(HashMap<String, TrieNode> children) {
 		this.children = children;
 	}
-	
-	
+
+	public TrieNode getParent() {
+		return parent;
+	}
+
+	public void setParent(TrieNode parent) {
+		this.parent = parent;
+	}
 }

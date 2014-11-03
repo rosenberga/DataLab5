@@ -28,10 +28,10 @@ public class PrefixMatcher {
 			while((line = br.readLine()) != null) {
 				String[] parts = line.split("\\|");
 				buildTrie(parts[0], parts[1], parts[2]);
-//				System.out.println(parts[0]);
-//				System.out.println(parts[1]);
-//				System.out.println(parts[2]);
-//				System.out.println(line);
+				//System.out.println(parts[0]);
+				//System.out.println(parts[1]);
+				//System.out.println(parts[2]);
+				//System.out.println(line);
 			}
 			
 			br.close();
@@ -41,9 +41,11 @@ public class PrefixMatcher {
 	}
 	
 	public void buildTrie(String s, String s2, String s3){
-		String prefix = s;
+		String prefixString = s;
+		int prefixLength = getPrefixLength(prefixString);
+		int[] prefix = getPrefixAsInt(prefixString);
 		int[] as = getAS(s2);
-		String nextHop = s3;
+		int[] nextHop = getIPAsInt(s3);
 		
 		PrefixTrie trie = new PrefixTrie(strides);
 		// TODO Begin building the trie here
@@ -53,7 +55,6 @@ public class PrefixMatcher {
 	public int[] getAS(String s){
 		String[] temp = s.split(" ");
 		int[] result = new int[temp.length];
-		
 		for(int i = 0; i < temp.length; i++)
 			result[i] = Integer.parseInt(temp[i]);
 		return result;
@@ -62,6 +63,15 @@ public class PrefixMatcher {
 	public int getPrefixLength(String s){
 		String[] temp = s.split("\\/");
 		int result = Integer.parseInt(temp[1]);
+		return result;
+	}
+	
+	public int[] getPrefixAsInt(String s){
+		String[] parts = s.split("\\/");
+		String[] temp = parts[0].split("\\.");
+		int[] result = new int[temp.length];
+		for(int i = 0; i < temp.length; i++)
+			result[i] = Integer.parseInt(temp[i]);
 		return result;
 	}
 	

@@ -29,12 +29,16 @@ public class PrefixMatcher {
 		PrefixTrie trie = buildTrie(fin);
 		
 		// Lookup each ip in sampleips.txt, return next hop for each one
-		
 		try{
 			String line;
 			BufferedReader br = new BufferedReader(new FileReader(file2));
 			while((line = br.readLine()) != null){
-				trie.findNextHopRouter(line);
+				int[] lookup = getIPAsInt(line);
+				
+				
+				
+				//int bit = ((pre >>> shift) << 7) >>> 7;
+				//trie.findNextHopRouter(line);
 			}
 			
 		} catch (IOException e){

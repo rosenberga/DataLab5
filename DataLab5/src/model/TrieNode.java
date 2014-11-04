@@ -1,7 +1,14 @@
 package model;
 
 import java.util.HashMap;
-
+/**
+ * PrefixTree Trie Node
+ * 
+ * @author Adam Rosenberg
+ * @author Conrad Geisel
+ * @author Nick Paquette
+ *
+ */
 public class TrieNode {
 	private HashMap<String, TrieNode> children;
 	private String nextHop;

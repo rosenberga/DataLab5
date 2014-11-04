@@ -4,6 +4,14 @@ import java.io.*;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
 
+/**
+ * PrefixMatcher
+ * 
+ * @author Adam Rosenberg
+ * @author Conrad Geisel
+ * @author Nick Paquette
+ *
+ */
 public class PrefixMatcher {
 	private String file1;
 	private String file2;

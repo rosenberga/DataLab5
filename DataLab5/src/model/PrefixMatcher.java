@@ -17,8 +17,6 @@ public class PrefixMatcher {
 	private String file2;
 	private int strides;
 	
-	// do 31 - (strides-1) for shifting
-	
 	public static void main(String[] args) {
 		
 		new PrefixMatcher(args[0], args[1], args[2]);
@@ -27,7 +25,7 @@ public class PrefixMatcher {
 	public PrefixMatcher(String file1, String file2, String length) {
 		this.file1 = file1;
 		this.file2 = file2;
-		strides = Integer.parseInt(length);
+		this.strides = Integer.parseInt(length);
 		
 		// read the first file and build a list to use to build the trie
 		ArrayList<String> fin = readFirstFile(this.file1);
@@ -100,10 +98,16 @@ public class PrefixMatcher {
 	
 	private void readSecondFile(String file, PrefixTrie trie){
 		try{
-			String line;
+			String line, nextHop;
 			BufferedReader br = new BufferedReader(new FileReader(file));
 			while((line = br.readLine()) != null){
-				trie.getNextHop(line);
+				System.out.print(line + '\t');
+				nextHop = trie.getNextHop(line);
+				if(nextHop == null)
+					System.out.println("No Match");
+				else
+					System.out.println(nextHop);
+				
 			}
 			br.close();
 			

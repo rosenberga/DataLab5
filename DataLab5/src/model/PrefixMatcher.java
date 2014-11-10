@@ -40,7 +40,10 @@ public class PrefixMatcher {
 		trie.buildTrie(fin);
 		
 		// Lookup each IP in sampleips.txt, return next hop for each one
+		
 		readSecondFile(this.file2, trie);
+		
+		System.out.println("\nAverage Lookup Time (in nanoseconds): " +trie.getAvgLookupTime());
 		
 	}
 	

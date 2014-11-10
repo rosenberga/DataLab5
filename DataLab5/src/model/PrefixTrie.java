@@ -16,6 +16,10 @@ public class PrefixTrie {
 	private TrieNode root;
 	private int stride;
 	private int bitMask;
+	private long startTime;
+	private long endTime;
+	private long runningTimeTotal = 0;
+	private long lookupCount = 0;
 	
 	public PrefixTrie(int stride) {
 		this.stride = stride;
@@ -73,6 +77,8 @@ public class PrefixTrie {
 		int address = getIPAsInt(s);
 		String result = null;
 		
+		lookupCount++;
+		startTime = System.nanoTime();
 		for(int i = 1; i <= 32/stride; i++){
 			int temp = address >>> (32 - (stride * i));
 			p = p.getChild(""+ (temp & bitMask));
@@ -81,7 +87,9 @@ public class PrefixTrie {
 			else if(p.containsNextHop())
 				result = p.getNextHop();
 		}
+		endTime = System.nanoTime();
 		
+		runningTimeTotal += (endTime-startTime);
 		return result;
 	}
 	
@@ -100,6 +108,12 @@ public class PrefixTrie {
 		for(int i = 1; i <= b.length; i++){
 			result |= ((int) b[i-1] & 0xFF) << (32 - (8 * i));
 		}
+		return result;
+	}
+	
+	public double getAvgLookupTime(){
+		double result;
+		result = runningTimeTotal / lookupCount;
 		return result;
 	}
 }

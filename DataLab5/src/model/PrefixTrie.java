@@ -20,6 +20,7 @@ public class PrefixTrie {
 	private long endTime;
 	private long runningTimeTotal = 0;
 	private long lookupCount = 0;
+	private long mem = 0;
 	
 	public PrefixTrie(int stride) {
 		this.stride = stride;
@@ -36,6 +37,8 @@ public class PrefixTrie {
 	}
 	
 	public void buildTrie(ArrayList<String> nodes) {
+		Runtime runTime = Runtime.getRuntime();
+		
 		for(int i = 0; i < nodes.size(); i++){
 			String str = nodes.get(i);
 			String[] parts = str.split("\\|");
@@ -70,6 +73,9 @@ public class PrefixTrie {
 			}
 
 		}
+		
+		runTime.gc();
+		mem = runTime.totalMemory() - runTime.freeMemory();
 	}
 	
 	public String getNextHop(String s){
@@ -111,9 +117,13 @@ public class PrefixTrie {
 		return result;
 	}
 	
-	public double getAvgLookupTime(){
-		double result;
+	public long getAvgLookupTime(){
+		long result;
 		result = runningTimeTotal / lookupCount;
 		return result;
+	}
+	
+	public long getMemUsage(){
+		return mem;
 	}
 }

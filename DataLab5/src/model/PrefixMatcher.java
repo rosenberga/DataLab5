@@ -44,6 +44,7 @@ public class PrefixMatcher {
 		readSecondFile(this.file2, trie);
 		
 		System.out.println("\nAverage Lookup Time (in nanoseconds): " +trie.getAvgLookupTime());
+		System.out.println("Trie memory usage (in bytes): " +trie.getMemUsage());
 		
 	}
 	

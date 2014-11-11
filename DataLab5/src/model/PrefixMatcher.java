@@ -27,6 +27,10 @@ public class PrefixMatcher {
 		this.file2 = file2;
 		this.strides = Integer.parseInt(length);
 		
+		if(this.strides <= 0 || this.strides > 3){
+			System.out.println("Stride length must be 1, 2, or 3");
+			System.exit(1);
+		}
 		// read the first file and build a list to use to build the trie
 		ArrayList<String> fin = readFirstFile(this.file1);
 		
